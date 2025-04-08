@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Monitoring Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="light-theme">
+  <div class="dashboard">
+    <header>
+      <h1>System Monitoring Dashboard</h1>
+      <div class="controls">
+        <button id="themeToggle">Toggle Dark Mode</button>
+        <button id="exportJSON">Export JSON</button>
+        <button id="exportCSV">Export CSV</button>
+      </div>
+    </header>
+    
+    <div class="dashboard-grid">
+      <!-- CPU Section -->
+      <section class="panel" id="cpu-panel">
+        <h2>CPU Usage</h2>
+        <div class="chart-container">
+          <canvas id="cpuChart"></canvas>
+        </div>
+        <div class="stat-value" id="cpuValue">0%</div>
+        
+        <div class="details-container">
+          <h3>Core Utilization</h3>
+          <div id="cpuCores" class="cores-container"></div>
+          
+          <h3>Load Average</h3>
+          <div class="load-average">
+            <div class="load-item">
+              <span class="load-label">1 min:</span>
+              <span id="load1" class="load-value">0.00</span>
+            </div>
+            <div class="load-item">
+              <span class="load-label">5 min:</span>
+              <span id="load5" class="load-value">0.00</span>
+            </div>
+            <div class="load-item">
+              <span class="load-label">15 min:</span>
+              <span id="load15" class="load-value">0.00</span>
+            </div>
+          </div>
+          
+          <h3>Temperature</h3>
+          <div id="cpuTemp" class="temp-value">N/A</div>
+        </div>
+      </section>
+      
+      <!-- Memory Section -->
+      <section class="panel" id="memory-panel">
+        <h2>Memory Usage</h2>
+        <div class="chart-container">
+          <canvas id="memoryChart"></canvas>
+        </div>
+        <div class="stat-value" id="memoryValue">0%</div>
+        
+        <div class="details-container">
+          <div class="memory-details">
+            <div class="memory-item">
+              <span class="memory-label">Total:</span>
+              <span id="memTotal" class="memory-value">0 GB</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-label">Used:</span>
+              <span id="memUsed" class="memory-value">0 GB</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-label">Free:</span>
+              <span id="memFree" class="memory-value">0 GB</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-label">Cached:</span>
+              <span id="memCached" class="memory-value">0 GB</span>
+            </div>
+          </div>
+          
+          <h3>Swap Usage</h3>
+          <div class="chart-container">
+            <canvas id="swapChart"></canvas>
+          </div>
+          <div class="memory-details">
+            <div class="memory-item">
+              <span class="memory-label">Total:</span>
+              <span id="swapTotal" class="memory-value">0 GB</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-label">Used:</span>
+              <span id="swapUsed" class="memory-value">0 GB</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Disk Section -->
+      <section class="panel" id="disk-panel">
+        <h2>Disk Usage</h2>
+        <div class="chart-container">
+          <canvas id="diskChart"></canvas>
+        </div>
+        <div class="stat-value" id="diskValue">0%</div>
+        
+        <div class="details-container">
+          <h3>Partitions</h3>
+          <div id="diskPartitions" class="partitions-container"></div>
+          
+          <h3>I/O Performance</h3>
+          <div class="disk-io">
+            <div class="io-item">
+              <span class="io-label">Read:</span>
+              <span id="diskRead" class="io-value">0 B/s</span>
+            </div>
+            <div class="io-item">
+              <span class="io-label">Write:</span>
+              <span id="diskWrite" class="io-value">0 B/s</span>
+            </div>
+            <div class="io-item">
+              <span class="io-label">IOPS:</span>
+              <span id="diskIOPS" class="io-value">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Network Section -->
+      <section class="panel" id="network-panel">
+        <h2>Network Activity</h2>
+        <div class="chart-container">
+          <canvas id="networkChart"></canvas>
+        </div>
+        
+        <div class="details-container">
+          <div class="network-stats">
+            <div class="network-item">
+              <span class="network-label">Download:</span>
+              <span id="networkDown" class="network-value">0 B/s</span>
+            </div>
+            <div class="network-item">
+              <span class="network-label">Upload:</span>
+              <span id="networkUp" class="network-value">0 B/s</span>
+            </div>
+          </div>
+          
+          <h3>Total Transfer</h3>
+          <div class="network-stats">
+            <div class="network-item">
+              <span class="network-label">Downloaded:</span>
+              <span id="totalDown" class="network-value">0 B</span>
+            </div>
+            <div class="network-item">
+              <span class="network-label">Uploaded:</span>
+              <span id="totalUp" class="network-value">0 B</span>
+            </div>
+          </div>
+          
+          <h3>Connections</h3>
+          <div id="networkConnections" class="connections-value">0 active connections</div>
+        </div>
+      </section>
+      
+      <!-- Processes Section -->
+      <section class="panel" id="processes-panel">
+        <h2>Process Monitor</h2>
+        
+        <div class="process-summary">
+          <div class="process-item">
+            <span class="process-label">Total:</span>
+            <span id="processTotal" class="process-value">0</span>
+          </div>
+          <div class="process-item">
+            <span class="process-label">Running:</span>
+            <span id="processRunning" class="process-value">0</span>
+          </div>
+          <div class="process-item">
+            <span class="process-label">Sleeping:</span>
+            <span id="processSleeping" class="process-value">0</span>
+          </div>
+          <div class="process-item">
+            <span class="process-label">Zombie:</span>
+            <span id="processZombie" class="process-value">0</span>
+          </div>
+        </div>
+        
+        <div class="details-container">
+          <h3>Top CPU Processes</h3>
+          <table class="process-table" id="topCpuTable">
+            <thead>
+              <tr>
+                <th>PID</th>
+                <th>Name</th>
+                <th>CPU %</th>
+                <th>Memory %</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          
+          <h3>Top Memory Processes</h3>
+          <table class="process-table" id="topMemTable">
+            <thead>
+              <tr>
+                <th>PID</th>
+                <th>Name</th>
+                <th>CPU %</th>
+                <th>Memory %</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+      
+      <!-- System Section -->
+      <section class="panel" id="system-panel">
+        <h2>System Information</h2>
+        
+        <div class="system-info">
+          <div class="system-item">
+            <span class="system-label">Uptime:</span>
+            <span id="systemUptime" class="system-value">0d 0h 0m 0s</span>
+          </div>
+        </div>
+        
+        <div class="details-container">
+          <h3>Historical Data</h3>
+          <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+          </div>
+          
+          <div class="history-controls">
+            <button id="historyHour">Last Hour</button>
+            <button id="historyDay">Last Day</button>
+            <button id="historyWeek">Last Week</button>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Settings Section -->
+      <section class="panel" id="settings-panel">
+        <h2>Settings</h2>
+        
+        <div class="settings-container">
+          <h3>Alert Thresholds</h3>
+          <div class="setting-item">
+            <label for="cpuThreshold">CPU Alert Threshold (%)</label>
+            <input type="number" id="cpuThreshold" min="0" max="100" value="90">
+          </div>
+          <div class="setting-item">
+            <label for="memoryThreshold">Memory Alert Threshold (%)</label>
+            <input type="number" id="memoryThreshold" min="0" max="100" value="90">
+          </div>
+          <div class="setting-item">
+            <label for="diskThreshold">Disk Alert Threshold (%)</label>
+            <input type="number" id="diskThreshold" min="0" max="100" value="90">
+          </div>
+          
+          <h3>Email Notifications</h3>
+          <div class="setting-item">
+            <label for="emailTo">Email Recipient</label>
+            <input type="email" id="emailTo" value="admin@example.com">
+          </div>
+          
+          <h3>Self-Healing</h3>
+          <div class="setting-item">
+            <label for="selfHealEnabled">Enable Self-Healing</label>
+            <input type="checkbox" id="selfHealEnabled" checked>
+          </div>
+          
+          <button id="saveSettings" class="save-button">Save Settings</button>
+        </div>
+      </section>
+    </div>
+    
+    <div class="status-bar">
+      <div id="lastUpdated">Last updated: Never</div>
+      <div id="connectionStatus" class="connected">Connected</div>
+    </div>
+  </div>
+  
+  <script src="js/app.js"></script>
+</body>
+</html>
