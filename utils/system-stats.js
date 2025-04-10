@@ -13,7 +13,7 @@ async function getStats() {
     
     // Get disk usage and IO
     const fsData = await si.fsSize();
-    const diskIO = await si.disksIO();
+    const diskIO = await si.disksIO() || { rIO_sec: 0, wIO_sec: 0, tIO_sec: 0 };
     
     // Get network stats
     const networkStats = await si.networkStats();
@@ -89,9 +89,9 @@ async function getStats() {
         usedPercent: drive.use.toFixed(2)
       })),
       diskIO: {
-        readSpeed: formatBytes(diskIO.rIO_sec || 0) + '/s',
-        writeSpeed: formatBytes(diskIO.wIO_sec || 0) + '/s',
-        iops: (diskIO.tIO_sec || 0).toFixed(2)
+        readSpeed: formatBytes(diskIO?.rIO_sec || 0) + '/s',
+        writeSpeed: formatBytes(diskIO?.wIO_sec || 0) + '/s',
+        iops: (diskIO?.tIO_sec || 0).toFixed(2)
       },
       
       // Network metrics
@@ -133,8 +133,8 @@ async function getStats() {
       timestamp: new Date().toISOString()
     };
   } catch (error) {
-    console.error('Error getting system stats:', error);
-    throw error;
+    console.error('Error getting system stats:', (error)?.message);
+    throw error?.message;
   }
 }
 
